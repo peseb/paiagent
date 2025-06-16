@@ -7,7 +7,6 @@ def get_files_info(working_directory, directory=None):
     if not os.path.isdir(dir_path):
         return f'Error: "{directory}" is not a directory'
 
-    # directory_path = os.path.join(abs_path_directory, abs_path_directory)
     if not dir_path.startswith(abs_path_workdir):
         return f'Error: Cannot list "{dir_path}" as it is outside the permitted working directory'
 
