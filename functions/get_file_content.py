@@ -5,7 +5,7 @@ from functions.util import get_absolute_paths, validate_path
 def get_file_content(working_directory: str, file_path: str) -> str:
     try:
         abs_path_workdir, abs_filepath = get_absolute_paths(working_directory, file_path)
-        err = validate_path(abs_path_workdir, abs_filepath)
+        err = validate_path(abs_path_workdir, abs_filepath, file_path)
         if err != None:
             return err
         
