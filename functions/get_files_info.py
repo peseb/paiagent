@@ -1,9 +1,14 @@
 import os
 
+from functions.util import get_absolute_paths, validate_path
 
-def get_files_info(working_directory, directory=None):
-    abs_path_workdir = os.path.abspath(working_directory)
-    dir_path = os.path.abspath(os.path.join(abs_path_workdir, directory))
+
+def get_files_info(working_directory: str, directory: str | None=None):
+    abs_path_workdir, dir_path = get_absolute_paths(working_directory, directory)
+    err = validate_path(abs_path_workdir, dir_path)
+    if err != None:
+        return err
+    
     if not os.path.isdir(dir_path):
         return f'Error: "{directory}" is not a directory'
 

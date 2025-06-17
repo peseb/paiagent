@@ -1,14 +1,13 @@
 import os
-from functions.get_files_info import get_files_info
+from functions.util import get_absolute_paths, validate_path
 
 
 def get_file_content(working_directory: str, file_path: str) -> str:
     try:
-        abs_path_workdir = os.path.abspath(working_directory)
-        abs_filepath = os.path.abspath(os.path.join(abs_path_workdir, file_path))
-
-        if not abs_filepath.startswith(abs_path_workdir):
-            return f"Error: Cannot list \"{abs_filepath}\" as it is outside the permitted working directory"
+        abs_path_workdir, abs_filepath = get_absolute_paths(working_directory, file_path)
+        err = validate_path(abs_path_workdir, abs_filepath)
+        if err != None:
+            return err
         
         if not os.path.isfile(abs_filepath):
             return f"Error: File not found or is not a regular file: \"{abs_filepath}\""
