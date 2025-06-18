@@ -17,11 +17,11 @@ def run_python_file(working_directory: str, file_path: str):
     
     try:
         result = subprocess.run(["python", abs_file_path], timeout=30, capture_output=True, text=True, cwd=abs_path_workdir)
-        print("STDOUT:",result.stdout)
-        print("STDERR:",result.stderr)
+        result_string = f"STDOUT: {result.stdout}. STDERR: {result.stderr}."
         if result.returncode != 0:
-            print(f"Process exited with code {result.returncode}")
+            result_string += f"Process exited with code {result.returncode}"
         if len(result.stdout) + len(result.stderr) == 0:
-            print("No output produced")
+            return "No output produced"
+        return result_string
     except Exception as e:
-        print(f"Error: executing Pything file: {e}")
+        return f"Error: executing Pything file: {e}"
