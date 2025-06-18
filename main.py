@@ -46,21 +46,37 @@ messages = [
 ]
 
 model = "gemini-2.0-flash-001"
-response = client.models.generate_content(model=model, contents=messages, config=types.GenerateContentConfig(tools=[available_functions], system_instruction=system_prompt))
-if response.function_calls:
-    for function_call_part in response.function_calls:
-        print(f"Calling function: {function_call_part.name}({function_call_part.args})")
-        result = call_function(function_call_part, verbose)
-        function_response = result.parts[0].function_response.response # type: ignore
-        if not function_response:
-            raise Exception("No function response.")
-        if verbose:
-            print(f"-> {function_response}")
 
-else:
-    print("response: ", response.text)
 
-if verbose:
-    print("User prompt: {user_prompt}")
-    print("Prompt tokens:", response.usage_metadata.prompt_token_count)
-    print("Response tokens:", response.usage_metadata.candidates_token_count)
+loop_number = 0
+while loop_number < 20:
+    loop_number+=1
+    response = client.models.generate_content(model=model, contents=messages, config=types.GenerateContentConfig(tools=[available_functions], system_instruction=system_prompt))
+    
+    if response.candidates:
+        for candidate in response.candidates:
+            if candidate.content:
+                messages.append(candidate.content)
+
+    if response.function_calls:
+        for function_call_part in response.function_calls:
+            print(f"Calling function: {function_call_part.name}({function_call_part.args})")
+            result = call_function(function_call_part, verbose)
+            messages.append(result)
+            function_response = result.parts[0].function_response.response # type: ignore
+            if not function_response:
+                raise Exception("No function response.")
+            if verbose:
+                print(f"-> {function_response}")
+    else:
+        print("response: ", response.text)
+        break
+
+    if verbose:
+        print("User prompt: {user_prompt}")
+        print("Prompt tokens:", response.usage_metadata.prompt_token_count)
+        print("Response tokens:", response.usage_metadata.candidates_token_count)
+    if response.candidates:
+        for candidate in response.candidates:
+            if candidate.content:
+                messages.append(candidate.content)
