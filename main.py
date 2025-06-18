@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 
+from functions.call_function import call_function
 from helper import get_function_definitions
 
 
@@ -49,6 +50,13 @@ response = client.models.generate_content(model=model, contents=messages, config
 if response.function_calls:
     for function_call_part in response.function_calls:
         print(f"Calling function: {function_call_part.name}({function_call_part.args})")
+        result = call_function(function_call_part, verbose)
+        function_response = result.parts[0].function_response.response # type: ignore
+        if not function_response:
+            raise Exception("No function response.")
+        if verbose:
+            print(f"-> {function_response}")
+
 else:
     print("response: ", response.text)
 
